@@ -1,0 +1,87 @@
+[
+  {
+    "id": 1,
+    "title": "React Hooks",
+    "content": "Learn useState, useEffect, useContext, and useReducer with practical examples.Build a small project to understand when each hook should be used in real applications.",
+    "tags": ["React", "Hooks", "Frontend"],
+    "date": "2026-07-07",
+    "topcolor":"#6B7A5A"
+  },
+  {
+    "id": 2,
+    "title": "MongoDB CRUD",
+    "content": "Practice Create, Read, Update, and Delete operations using Mongoose.Also learn validation,schema design, and error handling.",
+    "tags": ["MongoDB", "Database"],
+    "date": "2026-07-06",
+    "topcolor":"#A66A4C"
+  },
+  {
+    "id": 3,
+    "title": "JWT Authentication",
+    "content": "Implement user registration,login,password hashing wiht bcrypt,JWT token generation, protected routes, and logout functionality.",
+    "tags": ["JWT", "Authentication", "Node.js"],
+    "date": "2026-07-05",
+    "topcolor":"#B8860B"
+
+  },
+  {
+    "id": 4,
+    "title": "Express Routing",
+    "content": "Organize APIs using Express Router. Create separate route files,middleware,controllers,and reusable authentication logic.",
+    "tags": ["Express", "Backend"],
+    "date": "2026-07-04",
+    "topcolor":"#6B4F7D"
+  },
+  {
+    "id": 5,
+    "title": "Tailwind CSS",
+    "content": "Create responsive layouts using Flexbox, Grid.Practice spacing,typography, transitions, hover effects, and reusable UI components.",
+    "tags": ["Tailwind CSS", "UI"],
+    "date": "2026-07-03",
+    "topcolor":"#7A6F63"
+  },
+  {
+    "id": 6,
+    "title": "JavaScript Array Methods",
+    "content": "Revise map(), filter(), find(), reduce(), and forEach(). Solve five coding questions using each method.",
+    "tags": ["JavaScript", "Arrays"],
+    "date": "2026-07-02",
+    "topcolor":"#8E751A"
+  },
+  {
+    "id": 7,
+    "title": "Git Commands",
+    "content": "Practice git init, add, commit, push, pull, branch, checkout, merge and resolve merge conflicts.Learn how to manage repositories using GitHub.",
+    "tags": ["Git", "Version Control"],
+    "date": "2026-07-01",
+    "topcolor":"#5D6D7E"
+  },
+  {
+    "id": 8,
+    "title": "REST API",
+    "content": "Understand GET, POST, PUT, PATCH, and DELETE methods.Learn request and response objects, status codes, routing, middleware, and API testing using Postman.After checking every API, i finally found the issue. The loginroute was working, but the JWT token wasn't being sent correctly. A small mistake, but it took hours to notice",
+    "tasks":["Fixed authentication flow.",
+    "Improved API response messages.",
+    "Cleaned unused code.",
+    "Tomorrow:Complete the Edit Note feature." ],
+    "tags": ["Backend"],
+    "date": "2026-06-30",
+    "topcolor":"#8C6A5D"
+  },
+  {
+    "id": 9,
+    "title": "Project Ideas",
+    "content": "Build a Notes App, Weather App, Currency Converter, and Task Manager,Express tracker, and E-commerce website to strengthen your MERN Stack skills.",
+    "tags": ["Projects"],
+    "date": "2026-06-29",
+    "topcolor":"#556B2F"
+  },
+  {
+    "id": 10,
+    "title": "Interview Preparation",
+    "content": "Revise JavaScript, React, Node.js, MongoDB,SQL,HTML,CSS and common coding interview questions wiht hands-on practice every day.",
+    "tags": ["Career"],
+    "date": "2026-06-28",
+    "topcolor":"#7B4A3E"
+  }
+]
