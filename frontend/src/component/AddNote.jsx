@@ -1,4 +1,3 @@
-import { split } from "postcss/lib/list";
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import notes from "../data/notes.json";
@@ -7,23 +6,22 @@ import { toast } from "sonner";
 
 const AddNote = () => {
   const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
   const [topcolor, setTopcolor] = useState("#ffffff");
 
-  const colors = [...new Set(notes.flatMap((note) => note.topcolor))];
-
   const handlesubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/notes/addnote", {
-        title,
-        content,
-        tags,
-        topcolor,
-      });
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `${apiUrl}/notes/`,
+        { title, content, tags, topcolor },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
 
       navigate("/notes");
     } catch (err) {

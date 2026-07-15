@@ -6,7 +6,12 @@ const noteSchema = mongoose.Schema({
     tags:{type:[String]},
     topcolor:String,
     date:Date,
-    completed: Boolean
+    completed: Boolean,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
 });
 
 const Note = mongoose.model("Note", noteSchema);

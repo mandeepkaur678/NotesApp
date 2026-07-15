@@ -1,35 +1,39 @@
 import React, { useEffect, useState } from "react";
 // import notes from "../data/notes.json";
 import { Link } from "react-router-dom";
-import { Outlet, useNavigate } from "react-router-dom";
-import { space } from "postcss/lib/list";
+import { Outlet } from "react-router-dom";
 import axios from "axios";
+import { toast } from "sonner";
 
 const Notes = () => {
   const[notes,setNotes]=useState([]);
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-  const [loading , setLoading ] = useState(true)
-  
   const tags = [...new Set(notes.flatMap((note) => note.tags))];
-
-  const navigate = useNavigate();
 
   
   useEffect(()=>{
     const fetchnotes= async ()=>{
       try{
-        const res=await axios.get("http://localhost:5000/notes")
-        setNotes(res.data);
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`${apiUrl}/notes`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if(res.data && res.data.length > 0){
+          setNotes(res.data)
+        }
+        else{
+          setNotes([]);
+        }
+        
       }catch(err){
         console.log(err);
+        toast.error("Failed to load notes from the database.")
       }
-      finally{
-        setLoading(false)
-      }
-
     }
     fetchnotes()
-  } , [])
+  } , [apiUrl])
 
 
   return (
@@ -45,7 +49,7 @@ const Notes = () => {
         </div>
         <div className="flex ">
           <button className="border-2 border-gray-500 rounded-md bg-gray-500/20 mx-2 px-3">
-            <Link to="/notes/8"> + Preview Note</Link>
+            <Link to="/notes/default"> + Preview Note</Link>
           </button>
           <h1 className="border-2 mx-1 w-10 text-center rounded-full border-amber-400 bg-amber-300/20 shadow-md ">
             AL
@@ -74,7 +78,7 @@ const Notes = () => {
           {notes.map((note) => (
             <Link
               key={note._id}
-              to={`/notes/${note.id}`}
+              to={`/notes/${note._id}`}
               className="bg-white/90 rounded-xl shadow-md shadow-amber-200 m-4 max-w-lg hover:shadow-xl transition duration-300 hover:translate-y-2 overflow-hidden hover:rotate-[0.5deg]"
             >
               <div

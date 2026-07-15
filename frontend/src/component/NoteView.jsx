@@ -1,48 +1,60 @@
 import React, { useEffect, useState } from "react";
-import notes from "../data/notes.json";
-import { Outlet, useNavigate, useParams,  } from "react-router-dom";
-import Header from "./Header";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { toast } from "sonner";
+
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const NoteView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [notes,setNotes]=useState()
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const [note, setNote] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  //axios.get(`http://localhost:5000/notes/`)
+  //.then((res) => setNotes(res.data))
+  //.catch((err) => console.log(err))
 
-  useEffect(()=>{
-    //axios.get(`http://localhost:5000/notes/`)
-    //.then((res) => setNotes(res.data))
-    //.catch((err) => console.log(err))
+  const fetchNotes = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = { headers: { Authorization: `Bearer ${token}` } };
 
-    const fetchNotes = async () => {
-      try{
-
-        if(!id){
-          const res = await axios.get(`${apiUrl}/notes/`)
-
-          if(res.data && res.data.length > 0){
-            setNotes(res.data[0])
-          }
-          
+      if (id === "default") {
+        const res = await axios.get(`${apiUrl}/notes`, config);
+        if (res.data && res.data.length > 0) {
+          setNote(res.data[0]);
+        } else {
+          setNote({
+            title: "Preview Note",
+            content: "Select or create a note to view its details here.",
+            tags: ["Empty"],
+            topcolor: "#475569",
+          });
         }
-        else{
-          const res = await axios.get(`${apiUrl}/notes/${id}`)
-          if(res.data){
-            setNotes(res.data)
-          }
-        }
-      } catch(err){
-      
-    }
-    }
-   
-  },[id])
+      } else {
+        const res = await axios.get(`${apiUrl}/notes/${id}`, config);
+        setNote(res.data);
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to load note");
 
- 
-  if(!notes){
-    return<h2>Loading.....</h2>
+      navigate("/notes");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchNotes();
+  }, [id]);
+
+  if (loading) {
+    return <div>Loading....</div>;
+  }
+
+  if (!note) {
+    return <div>No note found....</div>;
   }
 
   return (
@@ -66,7 +78,7 @@ const NoteView = () => {
             <p className="">{note.content}</p>
 
             <div className="py-3">
-              {note.tasks.map((tag, index) => (
+              {(note.tasks || []).map((tag, index) => (
                 <p key={index}>{tag}</p>
               ))}
             </div>
@@ -75,7 +87,10 @@ const NoteView = () => {
           <div className="flex justify-between mx-3 border-t-2">
             <button className="text-red-600">Delete Note</button>
             <div className="">
-              <button onClick={()=>(navigate("/notes"))} className="border-2 mx-2 px-2 rounded-lg my-3 hover:bg-green-600 hover:text-white">
+              <button
+                onClick={() => navigate("/notes")}
+                className="border-2 mx-2 px-2 rounded-lg my-3 hover:bg-green-600 hover:text-white"
+              >
                 Close
               </button>
               <button className="border-2 px-2 rounded-lg hover:bg-green-600 hover:text-white">
