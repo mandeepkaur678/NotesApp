@@ -1,40 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 // import notes from "../data/notes.json";
 import { Link } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 const Notes = () => {
-  const[notes,setNotes]=useState([]);
+
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  
+  const { data: notes = [], isLoading, isError } = useQuery({
+    queryKey: ["notes", apiUrl],
+    queryFn: async () => {
+      const token = localStorage.getItem("token");
+      const { data } = await axios.get(`${apiUrl}/notes`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      return data ?? [];
+    },
+  });
 
   const tags = [...new Set(notes.flatMap((note) => note.tags))];
-
-  
-  useEffect(()=>{
-    const fetchnotes= async ()=>{
-      try{
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`${apiUrl}/notes`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if(res.data && res.data.length > 0){
-          setNotes(res.data)
-        }
-        else{
-          setNotes([]);
-        }
-        
-      }catch(err){
-        console.log(err);
-        toast.error("Failed to load notes from the database.")
-      }
-    }
-    fetchnotes()
-  } , [apiUrl])
-
 
   return (
     <>
@@ -58,6 +45,10 @@ const Notes = () => {
       </div>
       <div className="border-b-2 py-1 border-black/30 shadow-lg"></div>
       <div>
+        {isLoading && <p className="p-6">Loading notes...</p>}
+        {isError && (
+          <p className="p-6 text-red-600">Failed to load notes from the database.</p>
+        )}
         <button className="flex flex-wrap mt-4 gap-3 px-6 group">
           {tags.map((tag) => (
             <h1
