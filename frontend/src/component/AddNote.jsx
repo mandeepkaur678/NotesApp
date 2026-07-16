@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import notes from '../data/notes.json' 
-import api from "../utils/api";
 import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCreateNoteMutation } from "../service/noteService";
 
 const AddNote = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const color = [...new Set(notes.flatMap(note=>note.topcolor))]
 
@@ -17,16 +15,8 @@ const AddNote = () => {
   const [topcolor, setTopcolor] = useState(color[0]);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 
-  const addNoteMutation = useMutation({
-    mutationFn: async (newNote) => {
-      const { data } = await api.post("/notes/", newNote);
-
-      return data;
-    },
-    onSuccess: (savedNote) => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-      navigate("/notes");
-    },
+  const addNoteMutation = useCreateNoteMutation({
+    onSuccess: () => navigate("/notes"),
     onError: (err) => {
       toast.error("Failed to save note!");
       console.log(err);

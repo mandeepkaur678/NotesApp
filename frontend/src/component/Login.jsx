@@ -53,40 +53,52 @@ const Login = () => {
           <p className="text-center py-1">
             Sign in to pick up where your notes left off
           </p>
-          <div className="py-4">
-            <label className="">EMAIL</label>
-            <input
-              type="email"
-              placeholder="abc@gmail.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className=" bg-white w-full border-b-2 shadow-sm shadow-green-200 my-2 py-1 "
-            />
-            <br />
-            <div className="justify-end py-2">
-              <label className="justify-between inline py-2">PASSWORD</label>
-              <button className="pl-40 hover:text-green-600 hover:underline">
-                Forgot?
-              </button>
-              <br />
-
+          <form
+            onSubmit={(e) => {
+              handlelogin(e);
+            }} autoComplete="off"
+          >
+            <div className="py-4">
+              <label className="">EMAIL</label>
               <input
-                type="password"
-                placeholder="......"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="bg-white w-full border-b-2 shadow-sm shadow-green-200 my-2 py-1"
+                type="email"
+                placeholder="abc@gmail.com"
+                autoComplete="off"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                className=" bg-white w-full border-b-2 shadow-sm shadow-green-200 my-2 py-1 "
               />
               <br />
+              <div className="justify-end py-2">
+                <label className="justify-between inline py-2">PASSWORD</label>
+                <button className="pl-40 hover:text-green-600 hover:underline">
+                  Forgot?
+                </button>
+                <br />
+
+                <input
+                  type="password"
+                  placeholder="......"
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                  className="bg-white w-full border-b-2 shadow-sm shadow-green-200 my-2 py-1"
+                />
+                <br />
+              </div>
             </div>
-          </div>
-          <button
-            onClick={handlelogin}
-            disabled={loading}
-            className={`bg-[#0D530E] w-full py-2 px-7 rounded-sm text-white hover:bg-[#2f8f31] transition duration-500  ${loading ? "cursor-not-allowed" : "bg-[#2f8f31]"}`}
-          >
-            {loading ? "Signing in..." : "Sign in "}
-          </button>
+
+            <button
+              disabled={loading}
+              className={`bg-[#0D530E] w-full py-2 px-7 rounded-sm text-white hover:bg-[#2f8f31] transition duration-500  ${loading ? "cursor-not-allowed" : "bg-[#2f8f31]"}`}
+            >
+              {loading ? "Signing in..." : "Sign in "}
+            </button>
+          </form>
 
           <p className="text-center pt-4">
             New to DailyNotes?

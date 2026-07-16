@@ -2,8 +2,7 @@ import React from "react";
 // import notes from "../data/notes.json";
 import { Link, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
-import api from "../utils/api";
-import { useQuery } from "@tanstack/react-query";
+import { useNotesQuery } from "../service/noteService";
 import { toast } from "sonner";
 
 const Notes = () => {
@@ -16,14 +15,7 @@ const Notes = () => {
   }
 
 
-  const { data: notes = [], isLoading, isError } = useQuery({
-    queryKey: ["notes"],
-    queryFn: async () => {
-      const { data } = await api.get("/notes");
-
-      return data ?? [];
-    },
-  });
+  const { data: notes = [], isLoading, isError } = useNotesQuery();
 
   const tags = [...new Set(notes.flatMap((note) => note.tags))];
 

@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import api from "../utils/api";
 import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useDeleteNoteMutation,
+  useUpdateNoteMutation,
+} from "../service/noteService";
 
 const NoteView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -49,28 +51,19 @@ const NoteView = () => {
     fetchNotes();
   }, [id]);
 
-  const deleteNoteMutation = useMutation({
-    mutationFn: async () => {
-      await api.delete(`/notes/${id}`);
-    },
+  const deleteNoteMutation = useDeleteNoteMutation(id, {
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
       toast.success("Note deleted");
       navigate("/notes");
     },
     onError: () => toast.error("Failed to delete note"),
   });
 
-  const updateNoteMutation = useMutation({
-    mutationFn: async (updatedNote) => {
-      const { data } = await api.put(`/notes/${id}`, updatedNote);
-      return data;
-    },
+  const updateNoteMutation = useUpdateNoteMutation(id, {
     onSuccess: (updatedNote) => {
       setNote(updatedNote);
       setEditedNote(updatedNote);
       setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
       toast.success("Note updated");
     },
     onError: () => toast.error("Failed to update note"),
