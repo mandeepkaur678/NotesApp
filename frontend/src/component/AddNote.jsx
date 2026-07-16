@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import notes from '../data/notes.json' 
-import axios from "axios";
+import api from "../utils/api";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const AddNote = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   const color = [...new Set(notes.flatMap(note=>note.topcolor))]
 
@@ -20,15 +19,12 @@ const AddNote = () => {
 
   const addNoteMutation = useMutation({
     mutationFn: async (newNote) => {
-      const token = localStorage.getItem("token");
-      const { data } = await axios.post(`${apiUrl}/notes/`, newNote, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await api.post("/notes/", newNote);
 
       return data;
     },
     onSuccess: (savedNote) => {
-      queryClient.invalidateQueries({ queryKey: ["notes", apiUrl] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
       navigate("/notes");
     },
     onError: (err) => {

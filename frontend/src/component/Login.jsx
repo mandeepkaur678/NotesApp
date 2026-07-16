@@ -2,10 +2,9 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
-import axios from "axios";
+import api from "../utils/api";
 
 const Login = () => {
-  const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -23,7 +22,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(`${apiUrl}/user/login`, { email, password });
+      const res = await api.post("/user/login", { email, password });
 
       if (res.data.success) {
         const message = res.data.message;

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import api from "../utils/api";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const NoteView = () => {
   const { id } = useParams();
@@ -21,11 +19,8 @@ const NoteView = () => {
 
   const fetchNotes = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-
       if (id === "default") {
-        const res = await axios.get(`${apiUrl}/notes`, config);
+        const res = await api.get("/notes");
         if (res.data && res.data.length > 0) {
           setNote(res.data[0]);
         } else {
@@ -37,7 +32,7 @@ const NoteView = () => {
           });
         }
       } else {
-        const res = await axios.get(`${apiUrl}/notes/${id}`, config);
+        const res = await api.get(`/notes/${id}`);
         setNote(res.data);
         setEditedNote(res.data);
       }
@@ -56,13 +51,10 @@ const NoteView = () => {
 
   const deleteNoteMutation = useMutation({
     mutationFn: async () => {
-      const token = localStorage.getItem("token");
-      await axios.delete(`${apiUrl}/notes/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/notes/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes", apiUrl] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
       toast.success("Note deleted");
       navigate("/notes");
     },
@@ -71,17 +63,14 @@ const NoteView = () => {
 
   const updateNoteMutation = useMutation({
     mutationFn: async (updatedNote) => {
-      const token = localStorage.getItem("token");
-      const { data } = await axios.put(`${apiUrl}/notes/${id}`, updatedNote, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await api.put(`/notes/${id}`, updatedNote);
       return data;
     },
     onSuccess: (updatedNote) => {
       setNote(updatedNote);
       setEditedNote(updatedNote);
       setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: ["notes", apiUrl] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
       toast.success("Note updated");
     },
     onError: () => toast.error("Failed to update note"),

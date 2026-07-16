@@ -2,7 +2,7 @@ import React from "react";
 // import notes from "../data/notes.json";
 import { Link, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
-import axios from "axios";
+import api from "../utils/api";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -16,15 +16,10 @@ const Notes = () => {
   }
 
 
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-  
   const { data: notes = [], isLoading, isError } = useQuery({
-    queryKey: ["notes", apiUrl],
+    queryKey: ["notes"],
     queryFn: async () => {
-      const token = localStorage.getItem("token");
-      const { data } = await axios.get(`${apiUrl}/notes`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await api.get("/notes");
 
       return data ?? [];
     },

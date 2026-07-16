@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../utils/api";
 import { toast } from "sonner";
 
 const Register = () => {
@@ -35,7 +35,7 @@ const Register = () => {
         password,
       };
 
-      const res = await axios.post("http://localhost:5000/user", payload);
+      const res = await api.post("/user", payload);
       console.log("result: ", res);
       const message = res.data.message;
       toast.success(message);
