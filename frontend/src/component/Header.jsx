@@ -1,7 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
+
 const Header = () => {
+  
   return (
     <>
     <div className="py-2 bg-[#0D530E] text-white fixed top-0 left-0 w-full">

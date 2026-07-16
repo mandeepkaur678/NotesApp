@@ -1,11 +1,20 @@
 import React from "react";
 // import notes from "../data/notes.json";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const Notes = () => {
+  const navigate = useNavigate();
+
+  const handlelogout=()=>{
+    localStorage.removeItem("token");
+    toast.success("Logout Successfully!")
+    navigate("/")
+  }
+
 
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
   
@@ -39,7 +48,7 @@ const Notes = () => {
             <Link to="/notes/default"> + Preview Note</Link>
           </button>
           <h1 className="border-2 mx-1 w-10 text-center rounded-full border-amber-400 bg-amber-300/20 shadow-md ">
-            AL<button>Logout</button>
+            <button onClick={handlelogout}>Logout</button>
           </h1>
         </div>
       </div>
