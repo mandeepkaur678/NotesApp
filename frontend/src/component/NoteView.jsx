@@ -109,11 +109,11 @@ const NoteView = () => {
   return (
     <>
       <div className="fixed inset-0 flex justify-center items-center bg-black/60 z-40 ">
-        <div className="bg-white border-2 p-2 rounded-xl mx-32 ">
+        <div className="bg-white border-2 p-2 rounded-xl mx-32 w-96">
           <div>
             <div className="flex justify-between px-4 pt-2">
               <h1 className="font-bold text-lg ">{note.title}</h1>
-              <p className=" text-gray-400">{note.date}</p>
+              <p className=" text-gray-400 ">{note.date}</p>
             </div>
             <button
               className="border-2 w-fit px-3 rounded-full mx-3 my-2"
