@@ -8,7 +8,6 @@ const Login = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
-  console.log(apiUrl);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

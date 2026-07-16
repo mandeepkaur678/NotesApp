@@ -39,7 +39,7 @@ const Notes = () => {
             <Link to="/notes/default"> + Preview Note</Link>
           </button>
           <h1 className="border-2 mx-1 w-10 text-center rounded-full border-amber-400 bg-amber-300/20 shadow-md ">
-            AL
+            AL<button>Logout</button>
           </h1>
         </div>
       </div>

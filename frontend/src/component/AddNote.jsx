@@ -1,33 +1,41 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import notes from "../data/notes.json";
 import axios from "axios";
 import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const AddNote = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
-  const [topcolor, setTopcolor] = useState("#ffffff");
+  const [topcolor, setTopcolor] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 
-  const handlesubmit = async (e) => {
-    e.preventDefault();
-
-    try {
+  const addNoteMutation = useMutation({
+    mutationFn: async (newNote) => {
       const token = localStorage.getItem("token");
-      await axios.post(
-        `${apiUrl}/notes/`,
-        { title, content, tags, topcolor },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const { data } = await axios.post(`${apiUrl}/notes/`, newNote, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
+      return data;
+    },
+    onSuccess: (savedNote) => {
+      queryClient.invalidateQueries({ queryKey: ["notes", apiUrl] });
       navigate("/notes");
-    } catch (err) {
+    },
+    onError: (err) => {
       toast.error("Failed to save note!");
       console.log(err);
-    }
+    },
+  });
+
+  const handlesubmit = (e) => {
+    e.preventDefault();
+    addNoteMutation.mutate({ title, content, tags, topcolor, date });
   };
 
   return (
@@ -52,16 +60,11 @@ const AddNote = () => {
             onChange={(e) => setTitle(e.target.value)}
             className="w-full mx-2 text-xl"
           />
-          <input
-            type="text"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-          />
-
-          <input
-            type="color"
+          
+          <button
             value={topcolor}
             onChange={(e) => setTopcolor(e.target.value)}
+            className="rounded-full "
           />
 
           <textarea
@@ -74,21 +77,35 @@ const AddNote = () => {
             className="border border-amber-200 p-4 bg-amber-200/10 w-full"
           ></textarea>
 
+          <input
+            type="text"
+            placeholder="Add tag"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            className="rounded-sm my-2 border-none w-full"
+          />
+
+
           <div className="border-t-2 w-full my-2"></div>
-          <div className="text-right py-2">
-            <button
-              type="button"
-              onClick={() => navigate("/notes")}
-              className="border mx-2 py-2 px-2 border-amber-100 rounded-md hover:bg-amber-50 hover:font-bold"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={(e) => handlesubmit(e)}
-              className="border mx-1 py-2 px-2 border-green-200 bg-green-400/30 rounded-md hover:font-bold hover:bg-green-700 hover:text-white"
-            >
-              Save note
-            </button>
+          <div className="text-right py-2 flex justify-between">
+            <h4 className="text-gray-500">{date}</h4>
+            <div>
+              <button
+                type="button"
+                onClick={() => navigate("/notes")}
+                className="border mx-2 py-2 px-2 border-amber-100 rounded-md hover:bg-amber-50 hover:font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={(e) => handlesubmit(e)}
+                disabled={addNoteMutation.isPending}
+                className="border mx-1 py-2 px-2 border-green-200 bg-green-400/30 rounded-md hover:font-bold hover:bg-green-700 hover:text-white"
+              >
+                {addNoteMutation.isPending ? "Saving..." : "Save note"}
+              </button>
+            </div>
           </div>
         </div>
       </div>

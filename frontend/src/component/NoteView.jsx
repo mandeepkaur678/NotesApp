@@ -2,14 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const NoteView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedNote, setEditedNote] = useState(null);
 
   //axios.get(`http://localhost:5000/notes/`)
   //.then((res) => setNotes(res.data))
@@ -35,6 +39,7 @@ const NoteView = () => {
       } else {
         const res = await axios.get(`${apiUrl}/notes/${id}`, config);
         setNote(res.data);
+        setEditedNote(res.data);
       }
     } catch (err) {
       console.log(err);
@@ -48,6 +53,50 @@ const NoteView = () => {
   useEffect(() => {
     fetchNotes();
   }, [id]);
+
+  const deleteNoteMutation = useMutation({
+    mutationFn: async () => {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${apiUrl}/notes/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes", apiUrl] });
+      toast.success("Note deleted");
+      navigate("/notes");
+    },
+    onError: () => toast.error("Failed to delete note"),
+  });
+
+  const updateNoteMutation = useMutation({
+    mutationFn: async (updatedNote) => {
+      const token = localStorage.getItem("token");
+      const { data } = await axios.put(`${apiUrl}/notes/${id}`, updatedNote, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: (updatedNote) => {
+      setNote(updatedNote);
+      setEditedNote(updatedNote);
+      setIsEditing(false);
+      queryClient.invalidateQueries({ queryKey: ["notes", apiUrl] });
+      toast.success("Note updated");
+    },
+    onError: () => toast.error("Failed to update note"),
+  });
+
+  const saveNote = () => {
+    updateNoteMutation.mutate({
+      title: editedNote.title,
+      content: editedNote.content,
+      tags: Array.isArray(editedNote.tags)
+        ? editedNote.tags
+        : editedNote.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+      topcolor: editedNote.topcolor,
+    });
+  };
 
   if (loading) {
     return <div>Loading....</div>;
@@ -85,7 +134,13 @@ const NoteView = () => {
           </div>
 
           <div className="flex justify-between mx-3 border-t-2">
-            <button className="text-red-600">Delete Note</button>
+            <button
+              onClick={() => deleteNoteMutation.mutate()}
+              disabled={id === "default" || deleteNoteMutation.isPending}
+              className="text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {deleteNoteMutation.isPending ? "Deleting..." : "Delete Note"}
+            </button>
             <div className="">
               <button
                 onClick={() => navigate("/notes")}
@@ -93,9 +148,23 @@ const NoteView = () => {
               >
                 Close
               </button>
-              <button className="border-2 px-2 rounded-lg hover:bg-green-600 hover:text-white">
-                Edit Note
-              </button>
+              {isEditing ? (
+                <button
+                  onClick={saveNote}
+                  disabled={updateNoteMutation.isPending}
+                  className="border-2 px-2 rounded-lg hover:bg-green-600 hover:text-white disabled:opacity-50"
+                >
+                  {updateNoteMutation.isPending ? "Saving..." : "Save Note"}
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  disabled={id === "default"}
+                  className="border-2 px-2 rounded-lg hover:bg-green-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Edit Note
+                </button>
+              )}
             </div>
           </div>
         </div>
