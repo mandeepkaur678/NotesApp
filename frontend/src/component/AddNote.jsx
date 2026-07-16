@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import notes from '../data/notes.json' 
 import axios from "axios";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,10 +9,13 @@ const AddNote = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+  const color = [...new Set(notes.flatMap(note=>note.topcolor))]
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
-  const [topcolor, setTopcolor] = useState("");
+  const [topcolor, setTopcolor] = useState(color[0]);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 
   const addNoteMutation = useMutation({
@@ -60,12 +64,13 @@ const AddNote = () => {
             onChange={(e) => setTitle(e.target.value)}
             className="w-full mx-2 text-xl"
           />
-          
-          <button
-            value={topcolor}
-            onChange={(e) => setTopcolor(e.target.value)}
-            className="rounded-full "
+          <div>
+            {color.map((icolor) => (
+              <button key={icolor} onClick={() => setTopcolor(icolor)} style={{ backgroundColor : icolor}}
+            className="rounded-full p-4 m-2"
           />
+            ))}
+          </div>
 
           <textarea
             type="text"
