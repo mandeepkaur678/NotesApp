@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
-import api from "../utils/api";
+import api, { setTokens } from "../utils/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -31,8 +31,7 @@ const Login = () => {
         setEmail("");
         setPassword("");
 
-        const token = res.data.token;
-        localStorage.setItem("token", token);
+        setTokens(res.data.token, res.data.refreshToken);
         navigate("/notes");
       }
     } catch (error) {

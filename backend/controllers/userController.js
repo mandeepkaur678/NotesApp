@@ -2,19 +2,20 @@ import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+const ACCESS_TOKEN_EXPIRY = "15m";
+const REFRESH_TOKEN_EXPIRY = "30d";
+
 const register = async (req, res) => {
   try {
     const { email, password, name } = req.body;
     if (!email || !password || !name) {
-      res.status(400);
-      res.json({ message: "All fields are required", success: false });
+      return res.status(400).json({ message: "All fields are required", success: false });
     }
 
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      res.status(400);
-      res.json({ message: "User already exisits", success: false });
+      return res.status(400).json({ message: "User already exisits", success: false });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -55,19 +56,17 @@ const login = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-      {
-        id: user._id,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1d",
-      },
-    );
-    console.log("token", token);
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: ACCESS_TOKEN_EXPIRY,
+    });
+    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: REFRESH_TOKEN_EXPIRY,
+    });
+
     res.json({
       message: "Login Successful",
       token,
+      refreshToken,
       success: true,
     });
   } catch (err) {
@@ -77,4 +76,23 @@ const login = async (req, res) => {
   }
 };
 
-export { register, login };
+const refresh = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Refresh token is required", success: false });
+    }
+
+    const payload = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: payload.id }, process.env.JWT_SECRET, {
+      expiresIn: ACCESS_TOKEN_EXPIRY,
+    });
+
+    return res.json({ message: "Token refreshed", token, success: true });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid or expired refresh token", success: false });
+  }
+};
+
+export { register, login, refresh };

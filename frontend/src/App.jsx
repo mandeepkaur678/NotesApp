@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import React, { useEffect } from "react";
+import React from "react";
 import Header from "./component/Header";
 import Login from "./component/Login";
 import Register from "./component/Register";

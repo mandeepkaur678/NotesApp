@@ -4,14 +4,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import { useNotesQuery } from "../service/noteService";
 import { toast } from "sonner";
+import { clearTokens } from "../utils/api";
 
 const Notes = () => {
   const navigate = useNavigate();
 
-  const handlelogout=()=>{
-    localStorage.removeItem("token");
+  const handlelogout = () => {
+    clearTokens();
     toast.success("Logout Successfully!")
-    navigate("/")
+    navigate("/");
   }
 
 
