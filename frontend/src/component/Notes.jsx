@@ -35,7 +35,7 @@ const Notes = () => {
           <button className="border-2 border-gray-500 rounded-md bg-gray-500/20 mx-2 px-3">
             <Link to="/notes/default"> + Preview Note</Link>
           </button>
-          <h1 className="border-2 mx-1 w-10 text-center rounded-full border-amber-400 bg-amber-300/20 shadow-md ">
+          <h1 className="border-2 mx-3 w-fit text-center  border-amber-400 bg-amber-300/20 shadow-md hover:bg-amber-400 hover:text-white px-3 py-1 rounded-md transition duration-300">  
             <button onClick={handlelogout}>Logout</button>
           </h1>
         </div>
