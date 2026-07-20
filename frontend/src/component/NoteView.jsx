@@ -69,14 +69,30 @@ const NoteView = () => {
     onError: () => toast.error("Failed to update note"),
   });
 
+  const handleEditedNoteChange = (field, value) => {
+    setEditedNote((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+    setEditedNote(note);
+  };
+
   const saveNote = () => {
+    if (!editedNote) return;
+
     updateNoteMutation.mutate({
       title: editedNote.title,
       content: editedNote.content,
       tags: Array.isArray(editedNote.tags)
         ? editedNote.tags
-        : editedNote.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+        : editedNote.tags?.split(",").map((tag) => tag.trim()).filter(Boolean) || [],
       topcolor: editedNote.topcolor,
+      imageUrl: editedNote.imageUrl,
+      date: editedNote.date,
     });
   };
 
@@ -94,19 +110,48 @@ const NoteView = () => {
         <div className="bg-white border-2 p-2 rounded-xl mx-32 w-96">
           <div>
             <div className="flex justify-between px-4 pt-2">
-              <h1 className="font-bold text-lg ">{note.title}</h1>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editedNote?.title || ""}
+                  onChange={(e) => handleEditedNoteChange("title", e.target.value)}
+                  className="font-bold text-lg w-full border-b border-gray-300 px-2 py-1"
+                />
+              ) : (
+                <h1 className="font-bold text-lg ">{note.title}</h1>
+              )}
               <p className=" text-gray-400 ">{note.date}</p>
             </div>
-            <button
-              className="border-2 w-fit px-3 rounded-full mx-3 my-2"
-              style={{ backgroundColor: note.topcolor }}
-            >
-              {note.tags}
-            </button>
+            {isEditing ? (
+              <div className="mx-3 my-2">
+                <label className="text-xs text-gray-500">Tags</label>
+                <input
+                  type="text"
+                  value={Array.isArray(editedNote?.tags) ? editedNote.tags.join(", ") : editedNote?.tags || ""}
+                  onChange={(e) => handleEditedNoteChange("tags", e.target.value)}
+                  className="w-full border rounded-md px-2 py-1 mt-1"
+                />
+              </div>
+            ) : (
+              <button
+                className="border-2 w-fit px-3 rounded-full mx-3 my-2"
+                style={{ backgroundColor: note.topcolor }}
+              >
+                {Array.isArray(note.tags) ? note.tags.join(", ") : note.tags}
+              </button>
+            )}
           </div>
           <div className="border-t-2 border-black/50"></div>
           <div className=" font-serif px-3 py-2 ">
-            <p className="">{note.content}</p>
+            {isEditing ? (
+              <textarea
+                value={editedNote?.content || ""}
+                onChange={(e) => handleEditedNoteChange("content", e.target.value)}
+                className="w-full h-40 border rounded-md p-3"
+              />
+            ) : (
+              <p className="">{note.content}</p>
+            )}
 
             <div className="py-3">
               {(note.tasks || []).map((tag, index) => (
@@ -131,13 +176,22 @@ const NoteView = () => {
                 Close
               </button>
               {isEditing ? (
-                <button
-                  onClick={saveNote}
-                  disabled={updateNoteMutation.isPending}
-                  className="border-2 px-2 rounded-lg hover:bg-green-600 hover:text-white disabled:opacity-50"
-                >
-                  {updateNoteMutation.isPending ? "Saving..." : "Save Note"}
-                </button>
+                <>
+                  <button
+                    onClick={saveNote}
+                    disabled={updateNoteMutation.isPending}
+                    className="border-2 px-2 rounded-lg hover:bg-green-600 hover:text-white disabled:opacity-50"
+                  >
+                    {updateNoteMutation.isPending ? "Saving..." : "Save Note"}
+                  </button>
+                  <button
+                    onClick={cancelEdit}
+                    disabled={updateNoteMutation.isPending}
+                    className="border-2 px-2 rounded-lg ml-2 hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                </>
               ) : (
                 <button
                   onClick={() => setIsEditing(true)}

@@ -6,6 +6,9 @@ import { useCreateNoteMutation } from "../service/noteService";
 
 const AddNote = () => {
   const navigate = useNavigate();
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    console.log('cloudName: ', cloudName);
+
 
   const color = [...new Set(notes.flatMap(note=>note.topcolor))]
 
@@ -14,6 +17,9 @@ const AddNote = () => {
   const [tags, setTags] = useState([]);
   const [topcolor, setTopcolor] = useState(color[0]);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [imageFile, setImageFile] = useState(null);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   const addNoteMutation = useCreateNoteMutation({
     onSuccess: () => navigate("/notes"),
@@ -23,9 +29,71 @@ const AddNote = () => {
     },
   });
 
-  const handlesubmit = (e) => {
+  const uploadImageToCloudinary = async (file) => {
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      throw new Error("Cloudinary is not configured. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in .env.");
+    }
+
+    const url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
+    console.log('cloudName: ', cloudName);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.secure_url) {
+      const errorMessage = data.error?.message || "Cloudinary upload failed.";
+      throw new Error(errorMessage);
+    }
+
+    return data.secure_url;
+  };
+
+  const handlesubmit = async (e) => {
     e.preventDefault();
-    addNoteMutation.mutate({ title, content, tags, topcolor, date });
+    if(!title || !content || !tags){
+      toast.error("please fill all the fields")
+      return
+    }
+    setImageError("");
+
+    try {
+      let imageUrl;
+
+      if (imageFile) {
+        setImageUploading(true);
+        imageUrl = await uploadImageToCloudinary(imageFile);
+      }
+
+      const notePayload = {
+        title,
+        content,
+        tags,
+        topcolor,
+        date,
+      };
+
+      if (imageUrl) {
+        notePayload.imageUrl = imageUrl;
+      }
+
+      addNoteMutation.mutate(notePayload);
+    } catch (error) {
+      setImageError(error.message || "Image upload failed.");
+      toast.error(error.message || "Image upload failed.");
+      console.error(error);
+    } finally {
+      setImageUploading(false);
+    }
   };
 
   return (
@@ -76,6 +144,24 @@ const AddNote = () => {
             className="rounded-sm my-2 border-none w-full"
           />
 
+          <div className="my-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Upload image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                setImageError("");
+                setImageFile(e.target.files?.[0] || null);
+              }}
+              className="w-full"
+            />
+            {imageFile && (
+              <p className="text-xs text-gray-500 mt-1">Selected file: {imageFile.name}</p>
+            )}
+            {imageError && (
+              <p className="text-xs text-red-500 mt-1">{imageError}</p>
+            )}
+          </div>
 
           <div className="border-t-2 w-full my-2"></div>
           <div className="text-right py-2 flex justify-between">
@@ -91,10 +177,10 @@ const AddNote = () => {
               <button
                 type="button"
                 onClick={(e) => handlesubmit(e)}
-                disabled={addNoteMutation.isPending}
+                disabled={addNoteMutation.isPending || imageUploading}
                 className="border mx-1 py-2 px-2 border-green-200 bg-green-400/30 rounded-md hover:font-bold hover:bg-green-700 hover:text-white"
               >
-                {addNoteMutation.isPending ? "Saving..." : "Save note"}
+                {addNoteMutation.isPending || imageUploading ? "Saving..." : "Save note"}
               </button>
             </div>
           </div>
