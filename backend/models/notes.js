@@ -6,6 +6,7 @@ const noteSchema = mongoose.Schema({
     tags:{type:[String]},
     topcolor:String,
     date:Date,
+    imageUrl: String,
     completed: Boolean,
     user: {
         type: mongoose.Schema.Types.ObjectId,

@@ -102,6 +102,7 @@ const AddNote = () => {
         <div className=" bg-white rounded-lg shadow-lg w-2/3 p-5 max-w-2xl overflow-hidden">
           <div className="flex justify-between">
             <p className="text-sm text-gray-600 p-3">NEW NOTE</p>
+            
             <button
               type="button"
               onClick={() => navigate("/notes")}

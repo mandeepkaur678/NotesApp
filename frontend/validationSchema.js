@@ -38,7 +38,7 @@ export const RegisterSchema = yup.object({
     .matches(/[@#$%^&*(){}:"<>?;',.]/,"Password must contain at least one special character")
     .required("Password is required"),
 
-    confirmPassword: yup
+    confirmpassword: yup
     .string()
     .oneOf([yup.ref("password")],"Passwords do not match")
     .required("Confirm Password is required")

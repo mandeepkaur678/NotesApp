@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { RegisterSchema } from "../../validationSchema";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import { toast } from "sonner";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,6 +47,7 @@ const Register = () => {
       setEmail("");
       setPassword("");
       setConfirmpassword("");
+      navigate("/login");
     
     } catch (err) {
       if (err.response && err.response.status === 400) {
@@ -61,7 +63,7 @@ const Register = () => {
     <>
       <div className="w-[400px] h-[510px] bg-green-100/90 flex justify-center items-center mx-auto my-40 shadow-md shadow-[#0D530E]">
         <div>
-          <form onClick={(e)=>handleSubmit(e)}>
+          <form onSubmit={handleSubmit}>
             <h1 className="text-2xl py-5 text-center">DAILYNOTES</h1>
             <h1 className="text-xl font-bold  font-serif text-center">
               Create your account

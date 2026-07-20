@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import React from "react";
 import Header from "./component/Header";
 import Login from "./component/Login";
@@ -6,7 +6,8 @@ import Register from "./component/Register";
 import Notes from "./component/Notes";
 import NoteView from "./component/NoteView";
 import AddNote from "./component/AddNote";
-import { Toaster, toast } from "sonner";
+import RequireAuth from "./component/RequireAuth";
+import { Toaster } from "sonner";
 import Layout from "./component/Layout";
 
 function App() {
@@ -30,11 +31,33 @@ function App() {
       
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/notes" element={<Notes />}>
-            <Route path="/notes/:id" element={<NoteView />} />
-            <Route path="addnote" element={<AddNote />} />
+          <Route index element={<Login />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route
+            path="notes"
+            element={
+              <RequireAuth>
+                <Notes />
+              </RequireAuth>
+            }
+          >
+            <Route
+              path=":id"
+              element={
+                <RequireAuth>
+                  <NoteView />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="addnote"
+              element={
+                <RequireAuth>
+                  <AddNote />
+                </RequireAuth>
+              }
+            />
           </Route>
         </Route>
       </Routes>
