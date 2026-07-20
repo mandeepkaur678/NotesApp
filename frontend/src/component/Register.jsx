@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { RegisterSchema } from "../../validationSchema";
 import { Link } from "react-router-dom";
 import api from "../utils/api";
 import { toast } from "sonner";
@@ -9,27 +10,27 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmpassword] = useState("");
   const [loading, setLoading] = useState(false);
+  
 
   const handleSubmit = async (e) => {
-    try {
       e.preventDefault();
-      if (!name) {
-        toast.error("Please enter Name");
-        return;
+      try{
+        await RegisterSchema.validate({
+          name,
+          email,
+          password,
+          confirmpassword
+        },
+      {abortEarly:false})
       }
-
-      if (!email) {
-        toast.error("Please enter Email");
-        return;
-      }
-
-      if (password !== confirmpassword) {
-        toast.error("Password don't match!");
-      }
+      catch(error){
+        toast.error(error.errors[0]);      }
+      
 
       setLoading(true);
 
-      const payload = {
+      try{
+        const payload = {
         name,
         email,
         password,
@@ -44,14 +45,13 @@ const Register = () => {
       setEmail("");
       setPassword("");
       setConfirmpassword("");
-      setLoading("");
+    
     } catch (err) {
       if (err.response && err.response.status === 400) {
         toast.error("User already exist");
       } else {
         toast.error("Something went wrong");
       }
-      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ const Register = () => {
     <>
       <div className="w-[400px] h-[510px] bg-green-100/90 flex justify-center items-center mx-auto my-40 shadow-md shadow-[#0D530E]">
         <div>
-          <form onSubmit={handleSubmit}>
+          <form onClick={(e)=>handleSubmit(e)}>
             <h1 className="text-2xl py-5 text-center">DAILYNOTES</h1>
             <h1 className="text-xl font-bold  font-serif text-center">
               Create your account

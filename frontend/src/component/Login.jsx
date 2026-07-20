@@ -1,4 +1,5 @@
 import React from "react";
+import { loginSchema } from "../../validationSchema";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -11,15 +12,20 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+
   async function handlelogin(e) {
     e.preventDefault();
 
-    if (!email || !password) {
-      toast.error("All fields are required");
-      return;
-    }
+   try{
+    await loginSchema.validate(
+      {email,password},
+    {abortEarly:false})
+   }catch(error){
+    toast.error(error.errors[0]);
+    return;
+   }
 
-    setLoading(true);
+setLoading(true)
 
     try {
       const res = await api.post("/user/login", { email, password });
@@ -72,7 +78,7 @@ const Login = () => {
               <br />
               <div className="justify-end py-2">
                 <label className="justify-between inline py-2">PASSWORD</label>
-                <button className="pl-40 hover:text-green-600 hover:underline">
+                <button type="button" className="pl-40 hover:text-green-600 hover:underline">
                   Forgot?
                 </button>
                 <br />

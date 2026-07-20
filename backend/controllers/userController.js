@@ -2,7 +2,7 @@ import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const ACCESS_TOKEN_EXPIRY = "15m";
+const ACCESS_TOKEN_EXPIRY = "30m";
 const REFRESH_TOKEN_EXPIRY = "30d";
 
 const register = async (req, res) => {
