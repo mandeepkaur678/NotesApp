@@ -24,7 +24,8 @@ const Register = () => {
       {abortEarly:false})
       }
       catch(error){
-        toast.error(error.errors[0]);      }
+        toast.error(error.errors[0]); 
+      return     }
       
 
       setLoading(true);
