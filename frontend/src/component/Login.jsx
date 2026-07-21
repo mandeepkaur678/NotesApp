@@ -12,20 +12,17 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-
   async function handlelogin(e) {
     e.preventDefault();
 
-   try{
-    await loginSchema.validate(
-      {email,password},
-    {abortEarly:false})
-   }catch(error){
-    toast.error(error.errors[0]);
-    return;
-   }
+    try {
+      await loginSchema.validate({ email, password }, { abortEarly: false });
+    } catch (error) {
+      toast.error(error.errors[0]);
+      return;
+    }
 
-setLoading(true)
+    setLoading(true);
 
     try {
       const res = await api.post("/user/login", { email, password });
@@ -61,7 +58,8 @@ setLoading(true)
           <form
             onSubmit={(e) => {
               handlelogin(e);
-            }} autoComplete="off"
+            }}
+            autoComplete="off"
           >
             <div className="py-4">
               <label className="">EMAIL</label>
@@ -78,7 +76,10 @@ setLoading(true)
               <br />
               <div className="justify-end py-2">
                 <label className="justify-between inline py-2">PASSWORD</label>
-                <button type="button" className="pl-40 hover:text-green-600 hover:underline">
+                <button
+                  type="button"
+                  className="ml-48 w-fit hover:text-green-600 hover:underline"
+                >
                   Forgot?
                 </button>
                 <br />

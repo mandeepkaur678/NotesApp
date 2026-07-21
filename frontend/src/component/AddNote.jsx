@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import notes from '../data/notes.json' 
+import notes from "../data/notes.json";
 import { toast } from "sonner";
 import { useCreateNoteMutation } from "../service/noteService";
 
 const AddNote = () => {
   const navigate = useNavigate();
-    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-    console.log('cloudName: ', cloudName);
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  console.log("cloudName: ", cloudName);
 
-
-  const color = [...new Set(notes.flatMap(note=>note.topcolor))]
+  const color = [...new Set(notes.flatMap((note) => note.topcolor))];
+    const tag = [...new Set(notes.flatMap((note) => note.tag))];
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -34,11 +34,13 @@ const AddNote = () => {
     const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
     if (!cloudName || !uploadPreset) {
-      throw new Error("Cloudinary is not configured. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in .env.");
+      throw new Error(
+        "Cloudinary is not configured. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in .env.",
+      );
     }
 
     const url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
-    console.log('cloudName: ', cloudName);
+    console.log("cloudName: ", cloudName);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", uploadPreset);
@@ -60,9 +62,9 @@ const AddNote = () => {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    if(!title || !content || !tags){
-      toast.error("please fill all the fields")
-      return
+    if (!title || !content || !tags) {
+      toast.error("please fill all the fields");
+      return;
     }
     setImageError("");
 
@@ -102,7 +104,7 @@ const AddNote = () => {
         <div className=" bg-white rounded-lg shadow-lg w-2/3 p-5 max-w-2xl overflow-hidden">
           <div className="flex justify-between">
             <p className="text-sm text-gray-600 p-3">NEW NOTE</p>
-            
+
             <button
               type="button"
               onClick={() => navigate("/notes")}
@@ -119,11 +121,20 @@ const AddNote = () => {
             onChange={(e) => setTitle(e.target.value)}
             className="w-full mx-2 text-xl"
           />
+          <h1
+            key={tags}
+            className="px-5 py-2  rounded-full border bg-white transition-all duration-300 group-hover:opacity-40 hover:!opacity-100 hover:bg-green-700 hover:text-white hover:scale-110 cursor-pointer"
+          >
+            {tags}
+          </h1>
           <div>
             {color.map((icolor) => (
-              <button key={icolor} onClick={() => setTopcolor(icolor)} style={{ backgroundColor : icolor}}
-            className="rounded-full p-4 m-2"
-          />
+              <button
+                key={icolor}
+                onClick={() => setTopcolor(icolor)}
+                style={{ backgroundColor: icolor }}
+                className="rounded-full p-4 m-2"
+              />
             ))}
           </div>
 
@@ -146,7 +157,9 @@ const AddNote = () => {
           />
 
           <div className="my-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Upload image</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Upload image
+            </label>
             <input
               type="file"
               accept="image/*"
@@ -157,7 +170,9 @@ const AddNote = () => {
               className="w-full"
             />
             {imageFile && (
-              <p className="text-xs text-gray-500 mt-1">Selected file: {imageFile.name}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Selected file: {imageFile.name}
+              </p>
             )}
             {imageError && (
               <p className="text-xs text-red-500 mt-1">{imageError}</p>
@@ -181,7 +196,9 @@ const AddNote = () => {
                 disabled={addNoteMutation.isPending || imageUploading}
                 className="border mx-1 py-2 px-2 border-green-200 bg-green-400/30 rounded-md hover:font-bold hover:bg-green-700 hover:text-white"
               >
-                {addNoteMutation.isPending || imageUploading ? "Saving..." : "Save note"}
+                {addNoteMutation.isPending || imageUploading
+                  ? "Saving..."
+                  : "Save note"}
               </button>
             </div>
           </div>

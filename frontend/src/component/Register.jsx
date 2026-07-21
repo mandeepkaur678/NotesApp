@@ -11,28 +11,28 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmpassword] = useState("");
   const [loading, setLoading] = useState(false);
-  
 
   const handleSubmit = async (e) => {
-      e.preventDefault();
-      try{
-        await RegisterSchema.validate({
+    e.preventDefault();
+    try {
+      await RegisterSchema.validate(
+        {
           name,
           email,
           password,
-          confirmpassword
+          confirmpassword,
         },
-      {abortEarly:false})
-      }
-      catch(error){
-        toast.error(error.errors[0]); 
-      return     }
-      
+        { abortEarly: false },
+      );
+    } catch (error) {
+      toast.error(error.errors[0]);
+      return;
+    }
 
-      setLoading(true);
+    setLoading(true);
 
-      try{
-        const payload = {
+    try {
+      const payload = {
         name,
         email,
         password,
@@ -47,8 +47,7 @@ const Register = () => {
       setEmail("");
       setPassword("");
       setConfirmpassword("");
-      navigate("/login");
-    
+      navigate("/notes");
     } catch (err) {
       if (err.response && err.response.status === 400) {
         toast.error("User already exist");
@@ -61,7 +60,7 @@ const Register = () => {
   };
   return (
     <>
-      <div className="w-[400px] h-[510px] bg-green-100/90 flex justify-center items-center mx-auto my-40 shadow-md shadow-[#0D530E]">
+      <div className="w-[400px] h-[600px] bg-green-100/90 flex justify-center items-center mx-auto my-40 shadow-md shadow-[#0D530E]">
         <div>
           <form onSubmit={handleSubmit}>
             <h1 className="text-2xl py-5 text-center">DAILYNOTES</h1>
@@ -117,7 +116,7 @@ const Register = () => {
             <button
               onClick={(e) => handleSubmit(e)}
               disabled={loading}
-              className={`w-full my-2 bg-[#0D530E] py-2 mb-10 px-7 rounded-lg text-white hover:bg-[#2f8f31] transition duration-500 ${loading ? "cursor-not-allowed" : "bg-[#2f8f31"}`}
+              className={`w-full bg-[#0D530E] py-2 mb-10 px-7 rounded-lg text-white hover:bg-[#2f8f31] transition duration-500 ${loading ? "cursor-not-allowed" : "bg-[#2f8f31"}`}
             >
               {loading ? "processing" : "Create an Account"}
             </button>

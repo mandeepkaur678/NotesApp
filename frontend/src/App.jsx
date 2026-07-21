@@ -11,13 +11,13 @@ import { Toaster } from "sonner";
 import Layout from "./component/Layout";
 
 function App() {
-//   useEffect(()=>{
-//     const fetchdata=async()=>{
-//   const res = await fetch("http://localhost:5000/notes");
-//   const data=await res.json();
-//   console.log(data);};
-//   fetchdata();
-// },[])
+  //   useEffect(()=>{
+  //     const fetchdata=async()=>{
+  //   const res = await fetch("http://localhost:5000/notes");
+  //   const data=await res.json();
+  //   console.log(data);};
+  //   fetchdata();
+  // },[])
 
   return (
     <>
@@ -28,14 +28,14 @@ function App() {
         expand
         duration={4000}
       />
-      
+
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Login />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route
-            path="notes"
+            path="/notes"
             element={
               <RequireAuth>
                 <Notes />
