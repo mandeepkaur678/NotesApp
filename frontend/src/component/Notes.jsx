@@ -1,6 +1,7 @@
 import React from "react";
 // import notes from "../data/notes.json";
 import { Link, useNavigate } from "react-router-dom";
+import Profilepage from "./Profilepage";
 import { Outlet } from "react-router-dom";
 import { useNotesQuery } from "../service/noteService";
 import { toast } from "sonner";
@@ -8,13 +9,6 @@ import { clearTokens } from "../utils/api";
 
 const Notes = () => {
   const navigate = useNavigate();
-
-  const handlelogout = () => {
-    clearTokens();
-    toast.success("Logout Successfully!")
-    navigate("/");
-  }
-
 
   const { data: notes = [], isLoading, isError } = useNotesQuery();
 
@@ -35,8 +29,8 @@ const Notes = () => {
           <button className="border-2 border-gray-500 rounded-md bg-gray-500/20 mx-2 px-3">
             <Link to="/notes/default"> + Preview Note</Link>
           </button>
-          <h1 className="border-2 mx-3 w-fit text-center  border-amber-400 bg-amber-300/20 shadow-md hover:bg-amber-400 hover:text-white px-3 py-1 rounded-md transition duration-300">  
-            <button onClick={handlelogout}>Logout</button>
+          <h1 className="border-2 mx-3 w-fit text-center  border-amber-400 bg-amber-300/20 shadow-md hover:bg-amber-400 hover:text-white px-3 py-1 rounded-md transition duration-300">
+            <Link to="/profile">Profile</Link>
           </h1>
         </div>
       </div>
@@ -44,7 +38,9 @@ const Notes = () => {
       <div>
         {isLoading && <p className="p-6">Loading notes...</p>}
         {isError && (
-          <p className="p-6 text-red-600">Failed to load notes from the database.</p>
+          <p className="p-6 text-red-600">
+            Failed to load notes from the database.
+          </p>
         )}
         <button className="flex flex-wrap mt-4 gap-3 px-6 group">
           {tags.map((tag) => (

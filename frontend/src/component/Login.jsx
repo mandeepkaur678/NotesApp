@@ -3,7 +3,7 @@ import { loginSchema } from "../../validationSchema";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
-import api, { setTokens } from "../utils/api";
+import api, { setTokens, setUserData } from "../utils/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -35,6 +35,7 @@ const Login = () => {
         setPassword("");
 
         setTokens(res.data.token, res.data.refreshToken);
+        setUserData(res.data.user);
         navigate("/notes");
       }
     } catch (error) {

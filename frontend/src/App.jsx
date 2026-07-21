@@ -9,6 +9,7 @@ import AddNote from "./component/AddNote";
 import RequireAuth from "./component/RequireAuth";
 import { Toaster } from "sonner";
 import Layout from "./component/Layout";
+import Profilepage from "./component/Profilepage";
 
 function App() {
   //   useEffect(()=>{
@@ -42,6 +43,7 @@ function App() {
               </RequireAuth>
             }
           >
+                      
             <Route
               path=":id"
               element={
@@ -59,6 +61,14 @@ function App() {
               }
             />
           </Route>
+          <Route
+            path="profile"
+            element={
+              <RequireAuth>
+                <Profilepage />
+              </RequireAuth>
+            }
+          />
         </Route>
       </Routes>
     </>

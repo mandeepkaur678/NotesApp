@@ -2,6 +2,8 @@ import axios from "axios";
 
 const TOKEN_KEY = "token";
 const REFRESH_TOKEN_KEY = "refreshToken";
+const USER_KEY = "user";
+const PROFILE_IMAGE_KEY = "profileImage";
 let accessToken = localStorage.getItem(TOKEN_KEY);
 let refreshRequest = null;
 
@@ -23,6 +25,31 @@ export const clearTokens = () => {
   accessToken = null;
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  localStorage.removeItem(PROFILE_IMAGE_KEY);
+  window.dispatchEvent(new Event("auth:logout"));
+};
+
+export const setUserData = (user) => {
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  window.dispatchEvent(new Event("auth:updated"));
+};
+
+export const getStoredUser = () => {
+  try {
+    const storedUser = localStorage.getItem(USER_KEY);
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const setProfileImage = (image) => {
+  localStorage.setItem(PROFILE_IMAGE_KEY, image);
+};
+
+export const getStoredProfileImage = () => {
+  return localStorage.getItem(PROFILE_IMAGE_KEY);
 };
 
 const refreshAccessToken = async () => {
